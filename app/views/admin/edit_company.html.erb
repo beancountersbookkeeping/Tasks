@@ -1,0 +1,19 @@
+<div class="container">
+<h1>Edit Company</h1>
+ <div class="col-sm-4">
+ <%= form_for @company, url: update_company_path, method: 'POST' do |f| %>
+    <%= f.hidden_field :id %>
+   <div class="form-group"> 
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control', placeholder: "Enter name" %>
+   </div>
+  
+    <%= f.collection_select :user_id, @users.all, :id, :email %>
+  <div class="clear"></div>
+  </br>
+  <div class="clear"></div>
+  <%= f.submit "Update company", class: 'btn btn-primary' %>
+ <% end %>
+ </div>
+</div>
+

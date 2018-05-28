@@ -1,0 +1,19 @@
+<div class="container">
+<h1><%= @company.name %></h1>
+User email: <%= User.convert_id_to_email(@company.user_id) %></br>
+<h2>Tasks</h2>
+<ol>
+<% for @task in @tasks %>
+  <li><%= @task.title%></li>
+<% end %>
+</ol>
+</br>
+<%= link_to "New task", admin_new_task_path, :class => 'btn btn-success'%>
+
+</div>
+<div class="clear"></div>
+</br>
+<div class="clear"></div>
+<div class="container">
+  <%= link_to "Delete Company", @company, method: :delete, class: 'btn btn-danger', data: {confirm: 'Are you sure you want to delete this company?'} %>
+</div>

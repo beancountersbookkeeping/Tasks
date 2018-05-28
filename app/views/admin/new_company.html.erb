@@ -1,0 +1,16 @@
+<% @new_company_name = flash[:new_company_name] %>
+<div class="container"> 
+<h1>New Company</h1>
+ <div class="col-sm-4">
+ <%= form_for Company.new, :method => 'POST', url: create_company_path do |f| %>
+   <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, value: @new_company_name,class: 'form-control', placeholder: "Enter name" %>
+   </div>
+   <div class="form-group">
+    <%= f.collection_select :user_id, @users.all, :id, :email %>
+   </div>
+  <%= f.submit "Save company", class: 'btn btn-success' %>
+ <% end %>
+ </div>
+</div>

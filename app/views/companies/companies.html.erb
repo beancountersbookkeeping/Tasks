@@ -1,0 +1,92 @@
+    <script>
+        window.onload = function() {
+            var timer = new Tock({
+                callback: function () {
+                    $('#clockface').val(timer.msToTime(timer.lap()));
+                }
+            });
+            $('#start').on('click', function () {
+                timer.start($('#clockface').val());
+            });
+            $('#lap').on('click', function () {
+                $('#laptimes').append(timer.msToTime(timer.lap()) + '<br>');
+            });
+            $('#pause').on('click', function () {
+                timer.pause();
+            });
+            $('#stop').on('click', function () {
+                timer.stop();
+            });
+            $('#reset').on('click', function () {
+                timer.reset();
+                $('#clockface').val('');
+                $('#laptimes').html('');
+            });
+            var countdown = Tock({
+                countdown: true,
+                interval: 250,
+                callback: function () {
+                    console.log(countdown.lap() / 1000);
+                    $('#countdown_clock').val(timer.msToTime(countdown.lap()));
+                },
+                complete: function () {
+                    console.log('end');
+                    alert("Time's up!");
+                }
+            });
+            $('#startCountdown').on('click', function () {
+                countdown.start($('#countdown_clock').val());
+            });
+            $('#pauseCountdown').on('click', function () {
+                countdown.pause();
+            });
+            $('#stopCountdown').on('click', function () {
+                countdown.stop();
+            });
+            $('#resetCountdown').on('click', function () {
+                countdown.stop();
+                $('#countdown_clock').val('00:02');
+            });
+        }
+    </script>
+<div class="container">
+  <h1>All companies&nbsp;<%= link_to "New company", new_company_path, :class => "btn btn-success btn-sm"%>&nbsp;</h1>
+</div>
+</br>
+<div class="clear"></div>
+</br>
+ <div class="col-sm-12">
+<%= grid(@companies_grid, show_filters: :always, upper_pagination_panel: true) do |g|
+   g.column name: 'ID', attribute: 'id'   
+   g.column name: 'Name', attribute: 'name'
+   g.column name: 'User id', attribute: 'user_id'
+   g.column name: 'Date Created', attribute: 'created_at' do |task|
+     task.created_at.to_date
+   end
+   g.column name: 'Edit' do |company|
+     link_to('Show', company_path(company.id), :class => 'btn btn-warning btn-sm')
+   end
+   g.column name: 'Edit' do |company|
+     link_to('Edit', edit_company_path(company.id), :class => 'btn btn-primary btn-sm')
+   end
+   g.column name: 'Delete' do |company|
+     link_to('Delete', delete_company_path(company.id), :class => 'btn btn-danger btn-sm')
+   end
+ end %>
+</div>
+</br></br></br>
+<script>
+  
+  $("#li_companies").addClass('active');
+
+
+ $("#save_time").click(function(){
+   var task_id = String($("#task_id").val()); //parent().parent().parent().children().first()
+   var time_value = String($("#time_value").val());
+   if(task_id != "" && time_value != ""){
+   $.post('/tasks/save_time', {time: time_value, task_id: task_id});
+   }
+
+ });
+
+</script>

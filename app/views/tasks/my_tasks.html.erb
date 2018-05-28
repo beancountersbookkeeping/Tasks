@@ -1,0 +1,111 @@
+<div class="container"> 
+
+ <ul class="nav nav-pills" style="margin-top:10px;">
+  <li> <%= form_for :anything, url: :my_tasks_post do |f| %>
+   <%= f.hidden_field :task_type, :value => 'Active' %>
+   <%= f.submit "Active", :class => 'btn btn-sm', :id => 'submit_active' %>
+  <% end %></li>
+  <li><%= form_for :anything, url: :my_tasks_post do |f| %>
+   <%= f.hidden_field :task_type, :value => 'Completed' %>
+   <%= f.submit "Completed", :class => 'btn btn-sm', :id => 'submit_completed' %>
+  <% end %></li>
+ </ul> 
+<div class="clear">
+<% if @task_type == "Active" then %>
+<h2>All active tasks</h2>
+<div class="clear">
+  <span class="count_tasks"><%= @nr_tasks %></span> active tasks found.
+<% elsif @task_type == "Completed" then%>
+<h2>All complete tasks</h2>
+<div class="clear">
+  <span class="count_tasks"><%= @nr_tasks %></span> complete tasks found.
+<% end %>
+<div class="clear">
+<% if @tasks.size > 0 then %>
+<table class="table table-striped" style="max-width:1200px;">
+    <thead>
+      <tr>
+        <th>Task</th>
+        <th>Status</th>
+	<th>Complete task</th>
+	<th style="width:300px;">Time spent(minutes)</th>    
+      </tr>
+    </thead>
+       <tbody>
+ <% @tasks.each do |task| %> 
+     <tr id="task_<%=task.id%>">
+        <td><%= task.title.capitalize %></td>
+        <td><span class="badge"><%=task.status.to_s.capitalize%></span></td>
+        <td><% if task.status.to_s.capitalize != "Completed" then %>
+      <div id="button_complete_task_<%=task.id%>" class="button_complete_task btn btn-success btn-sm">Complete Task</div>
+     <% else%>
+      <div id="button_activate_task_<%=task.id%>" class="button_activate_task btn btn-danger btn-sm">Activate Task</div>
+     <% end %>
+        </td>
+	<td style="width:300px;">
+       <% if task.time != nil and task.time.to_s != "0"%>
+        <%= link_to task.time, update_task_time_spent_path, :class => 'editable_time', :data => { :type => 'text', :pk => task.id, :url => update_task_time_spent_path}%>
+       <% else %>
+	 <%= link_to "0", update_task_time_spent_path, :class => 'editable_time', :data => { :type => 'text', :pk => task.id, :url => update_task_time_spent_path}%>
+       <% end %>
+        </td>
+      </tr>
+ <% end %>
+    </tbody>
+  </table>
+<% end %>
+</br>
+
+</div>
+<% @task_type%>
+<script>
+  $.fn.editable.defaults.mode = 'inline';
+  
+  $(document).ready(function() {
+   $('.editable_time').editable();
+  });
+
+   $("#li_home").addClass('active');
+
+  var task_type = "<%=@task_type%>";
+  if(task_type == "Active"){
+    $("#submit_active").addClass('btn-primary');
+    $("#submit_completed").addClass('btn-default');
+  }
+  if(task_type == "Completed"){
+    $("#submit_completed").addClass('btn-primary');
+    $("#submit_active").addClass('btn-default');
+  }
+  
+  function complete_task(id){
+    $.get('/complete_task/' + String(id), function(){
+      //alert("Task " + String(id) + " was completed.")
+      var task_tr = "#task_" + String(id);      
+      $(task_tr).hide();
+      var count_tasks = parseInt($(".count_tasks").text());
+      if(count_tasks > 0){count_tasks = count_tasks - 1;$(".count_tasks").text(String(count_tasks));}
+    })
+  }
+  
+  $(".button_complete_task").click(function(){
+    var id = $(this).attr('id').substring(21);
+    complete_task(id);
+
+  });  
+
+  function activate_task(id){
+    $.get('/activate_task/' + String(id), function(){
+      var task_tr = "#task_" + String(id);
+      $(task_tr).hide();
+      var count_tasks = parseInt($(".count_tasks").text());
+      if(count_tasks > 0){count_tasks = count_tasks - 1;$(".count_tasks").text(String(count_tasks));}
+    })
+  }
+
+   $(".button_activate_task").click(function(){
+    var id = $(this).attr('id').substring(21);
+    activate_task(id);
+  });  
+
+
+</script>

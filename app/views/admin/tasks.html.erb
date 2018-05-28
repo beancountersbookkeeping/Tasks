@@ -1,0 +1,67 @@
+
+<div class="container">
+  <h1>All Tasks&nbsp;<%= link_to "New task", admin_new_task_path, :class => "btn btn-success btn-sm"%>&nbsp;<%= link_to "Recreate tasks", recreate_tasks_path, :class => "btn btn-primary btn-sm", :style => 'font-color:white;'%>
+</h1>
+</div>
+</br>
+<div class="clear"></div>
+</br>
+ <div class="col-sm-12">
+<%= grid(@tasks_grid, show_filters: :always, upper_pagination_panel: true) do |g|
+   g.column name: 'ID', attribute: 'id'   
+   g.column name: 'Task', attribute: 'title' do |task|
+     link_to(task.title, admin_show_task_path(task.id))
+   end
+   g.column name: 'Company', assoc: :company, attribute: 'name', custom_filter: @hash_companies, auto_reload: true do |task|
+    link_to(task.company.name, company_path(task.company.id)) if task.company
+   end
+   
+   g.column name: 'User', assoc: :user, attribute: 'email', custom_filter: @hash_users, auto_reload: true do |task|
+    link_to(task.user.email, user_path(task.user.id)) if task.user
+   end
+
+  g.column name:  'Archived', attribute: 'archived', auto_reload:  true  do |task|
+    task.archived? ? 'yes' : 'no'
+  end
+  g.column name: 'Date Created', attribute: 'created_at' do |task|
+     task.created_at.to_date
+   end
+  g.column name: 'Recreate task days', attribute: 'recreate_task_days'
+  g.column name: 'Archive' do |task|
+    if task.archived == false then  
+     link_to('Archive', admin_delete_task_path(task.id), :class => 'btn btn-danger btn-sm')
+    else
+     link_to('Un-archive', admin_delete_task_path(task.id), :class => 'btn btn-danger btn-sm')
+    end
+  end
+  g.column name: 'Time spent(minutes)', attribute: 'time' do |task|
+     if task.time then link_to(task.time, update_task_time_spent_path(task.time), :class => 'editable_time', :data => { :type => 'text', :pk => task.id, :url => update_task_time_spent_path}) 
+     else
+       link_to("0", update_task_time_spent_path(task.time), :class => 'editable_time', :data => { :type => 'text', :pk => task.id, :url => update_task_time_spent_path}) 
+     end
+  end
+ end %>
+</div>
+
+<script>
+  $.fn.editable.defaults.mode = 'inline';
+  
+  $(document).ready(function() {
+   $('.editable_time').editable();
+  });
+
+
+  $("#li_tasks").addClass('active');
+
+ $("#save_time").click(function(){
+   var task_id = String($("#task_id").val()); //parent().parent().parent().children().first()
+   var time_value = String($("#time_value").val());
+   if(task_id != "" && time_value != ""){
+   $.post('/tasks/save_time', {time: time_value, task_id: task_id}, function(){
+     alert('time added!');
+   });
+   }
+
+ });
+
+</script>
