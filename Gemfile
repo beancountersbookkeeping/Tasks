@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 ruby "2.3.0"
-gem 'sinatra', '1.0'
+gem "pg", :group => :production
+gem "sqlite3", :group => :development
 
 gem 'pundit'
 gem 'faker'
@@ -61,4 +62,3 @@ group :development do
   gem 'spring'
   gem 'sqlite3'
 end
-gem 'pg', '~> 0.21.0'
